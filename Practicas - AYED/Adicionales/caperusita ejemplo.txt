@@ -1,0 +1,126 @@
+Caperucita sale de su casa, quiere llegar a casa de su abuelita. Caperucita tiene una lista de caminos donde puede encontrarse al Lobo, y quiere evitarlos. Encontrar el camino más corto desde la casa de Caperucita a la casa de su abuelita.
+
+public ListaGenerica<String> caminoMasCorto(Grafo<String> mapa)
+
+
+
+15.30hs
+
+1) Análisis
+* Modelamos con un grafo ponderado, puede tener ciclos.
+* Vamos a utilizar un DFS.
+
+15.40hs
+
+2) Planteo
+* Como busco camino minimo, recorro todos los caminos.
+* Utilizo arreglo de visitados. Política: marco, proceso, desmarco.
+
+a. buscar casaCaperucita
+b. llamar dfs desde casaCaperucita
+  1. marco visitado y agrego al caminoActual
+  2. proceso el vertice
+    i) caso base, vertice == casaAbuelita
+      * comparo con caminoMinimo, si es menor, reemplazo.
+    ii) caso general, vertice != casaAbuelita
+      * recorro adyacentes, si cumplen condicion llamo dfs desde el adyacente.
+  3. desmarco visitado y elimino del caminoActual
+
+3) Solución / código
+
+public ListaGenerica<String> caminoMasCorto(Grafo<String> mapa, ListaGenerica<String> prohibidos) {
+  Vertice<String> casaCaperucita = buscarVertice(mapa, "Casa Caperucita");
+
+  ListaGenerica<String> caminoActual = new ListaEnlazadaGenerica<String();
+  CaminoMinimo caminoMinimo = new ListaEnlazadaGenerica<String();
+  boolean[] visitados = new boolean[mapa.listaVertices().tamanio() + 1];
+
+  prohibidos.comenzar();
+
+  while (!prohibidos.fin()) {
+    String nombreVertice = prohibidos.proximo();
+
+    Vertice<String> vertice = buscarVertice(mapa, nombreVertice);
+
+    visitados[vertice.getPosicion()] = true;
+  }
+
+  int longCaminoActual = 0;
+
+  dfs(mapa, casaCaperucita, caminoActual, caminoMinimo, visitados, longCaminoActual);
+
+  return caminoMinimo.getCamino();
+}
+
+private void dfs(
+  Grafo<String> mapa,
+  Vertice<String> verticeActual,
+  ListaGenerica<String> caminoActual,
+  CaminoMinimo caminoMinimo,
+  boolean[] visitados,
+  int longCaminoActual
+) {
+
+  visitados[verticeActual.getPosicion()] = true;
+  caminoActual.agregarFinal(verticeActual);
+
+  // proceso el vertice
+  if (verticeActual.dato().equals("Casa Abuelita")) {
+    // caso base
+    if (longCaminoActual < caminoMinimo.getLongitud()) {
+      caminoMinimo.actualizar(caminoActual, longCaminoActual);
+    }
+  }
+  else {
+    // caso general
+    ListaGenerica<Arista<String>> adyacentes = mapa.listaDeAdyacentes(verticeActual);
+
+    adyacentes.comenzar();
+
+    while (!adyacentes.fin()) {
+      Arista<String> adyacente = adyacentes.proximo();
+      Vertice<String> siguienteVertice = adyacente.verticeDestino();
+
+      int longTomandoEsteCamino = longCaminoActual + adyacente.peso();
+
+      if (!visitados[siguienteVertice.getPosicion()] && longTomandoEsteCamino < caminoMinimo.getLongitud()) {
+        dfs(mapa, siguienteVertice, caminoActual, caminoMinimo, visitados, longTomandoEsteCamino);
+      }
+    }
+  }
+  
+  visitados[verticeActual.getPosicion()] = false;
+  caminoActual.eliminarEn(caminoActual.tamanio());
+}
+
+
+public class CaminoMinimo {
+  private int longitud = Integer.MAX_VALUE;
+  private ListaGenerica<String> camino = new ListaEnlazadaGenerica<String>();
+
+  public void actualizar(ListaGenerica<String> nuevoCamino, int nuevaLongitud) {
+    camino.comenzar();
+    while (!camino.esVacia()) camino.eliminarEn(1);
+
+    nuevoCamino.comenzar();
+
+    while (!nuevoCamino.fin()) camino.agregarFinal(nuevoCamino.proximo());
+
+    longitud = nuevaLongitud;
+  }
+}
+
+
+public Vertice<String> buscarVertice(Grafo<String> grafo, String nombre) {
+  ListaGenerica<Vertice<String>> vertices = grafo.listaVertices();
+
+  vertices.comenzar();
+
+  while (!vertices.fin()) {
+    Vertice<String> vertice = vertices.proximo();
+
+   if (vertice.dato().equals(nombre)) return vertice;
+  }
+
+  return null;
+}

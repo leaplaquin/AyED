@@ -1,0 +1,130 @@
+1) Analizar
+
+- Llegar del vértice inicio al vértice destino.
+- Armar lista con los vértices visitados.
+- Si no llego a destino, devuelvo lista vacía.
+- Que sea el camino más corto.
++ Recorro todos los caminos. => conocer la longitud de los caminos. 
+-Necesito ver todos los caminos posibles para compararlos 
+
+2) Planteo
+
++ ciudadInicio => ya la tengo, es un vértice
++ ciudadDestino => es un String
++ uso un dfs, algoritmo recursivo
+
+caso base = llegué a ciudadDestino
+  comparo longCaminoActual con el longCaminoMinimo
+    si es menor, actualizo caminoMinimo con caminoActual
+
+caso general = estoy en otra ciudad
+  pido adyacentes
+  recorro adyacentes
+    llamo recursivamente con cada adyacente
+
+3) Codear
+
+public ListaGenerica<String> caminoMasCorto(String ciudad1, String ciudad2) {
+  // buscar ciudad1 => Vertice<String> ciudadInicio
+
+  ListaGenerica<String> caminoActual = new ListaEnlazadaGenerica<String();
+  AyudanteMapa ayudante = new AyudanteMapa();
+
+  boolean[] visitados = new boolean[mapaCiudades.listaVertices().tamanio() + 1];
+
+  Integer longCaminoActual = 0;
+
+  caminoMasCortoPrivado(ciudadInicio, ciudad2, caminoActual, ayudante, visitados, longCaminoActual);
+
+  return ayudante.getCamino();
+}
+
+
+
+privado void caminoMasCortoPrivado(
+  Vertice<String> ciudadActual,
+  String ciudadDestino,
+  ListaGenerica<String> caminoActual,
+  AyudanteMapa ayudante,
+  boolean[] visitados,
+  Integer longCaminoActual
+) {
+
+  visitados[ciudadActual.posicion()] = true;
+  caminoActual.agregarFinal(ciudadActual.dato());
+
+  // PROCESAMIENTO DEL VERTICE - INICIO 
+  if (ciudadActual.dato().equals(ciudadDestino)) {
+    // caso base
+    if (longCaminoActual < ayudante.getLongCamino()) {
+      ayudante.actualizar(caminoActual, longCaminoActual);
+    }
+  }
+  
+  else {
+    // caso general
+    ListaGeneral<Arista<String>> rutas = mapaCiudades.listaDeAdyacentes(ciudadActual);
+    Arista<String> rutaActual;
+    Vertice<String> ciudadSiguiente;
+    
+    rutas.comenzar();
+    while (!rutas.fin()) {
+      rutaActual = rutas.proximo();
+
+      ciudadSiguiente = rutaActual.verticeDestino();
+
+      Integer longConCiudadSiguiente = longCaminoActual + rutaActual.peso();
+
+      if (!visitados[ciudadSiguiente.posicion()] && longConCiudadSiguiente < ayudante.getLongCamino()) {
+        caminoMasCortoPrivado(ciudadSiguiente, ciudadDestino, caminoActual, ayudante, longConCiudadSiguiente);
+      }
+    }
+  }
+  // PROCESAMIENTO DEL VERTICE - FIN
+
+  visitados[ciudadActual.posicion()] = false;
+  caminoActual.eliminarEn(caminoActual.tamanio());
+}
+
+class AyudanteMapa {
+  Integer longCamino = Integer.MAX_VALUE;
+  ListaGenerica<String> camino;
+
+  public void actualizar(ListaGenerica<String> caminoNuevo, Integer longitud) {
+    longCamino = longitud;
+
+    camino.comenzar();
+
+    while (!camino.fin()) { camino.eliminarEn(1) }
+
+    caminoNuevo.comenzar();
+
+    while (!caminoNuevo.fin()) { camino.agregarFinal(caminoNuevo.proximo()) }
+  }
+}
+
+
+
+
+
+todos los caminos que lleguen a ciudad siguiente B tienen como min 1000km de long
+
+Si yo ya se que la long con la ciudad siguiente, mi peso = 1000 + 100 = 1000 y mi 
+camino min vale 20, no tiene sentido meterme con la ciudad siguiente porque ya nuestros
+pesos combinados superan el camino min.  
+
+
+a la primitiva la paso con el peso de la arista que estoy recorriendo sumado a mi peso 
+
+si tenia 100 de long, le agrego los 10 de la arista que estoy recorriendo
+y en el siguiente llamado me llega con 110 y en el momento que se vuelve de la rec
+la variable sigue valiendo 100. 
+Cuando termina todas las rec la primitiva llega a 0 
+
+
+Si me pide devolver el camino con menor cantidad de v recorridos
+comparo el tamanio del camino actual con el tamanio del camino min sin importar el 
+peso de las aristas 
+
+o puedo usar este algoritmo y en vez de evaluar el peso digo 1 y ahi tengo el camino min 
+Digo que el peso de todas las aristas es 1 porque es no ponderado 

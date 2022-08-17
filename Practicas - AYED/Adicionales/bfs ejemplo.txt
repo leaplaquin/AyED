@@ -1,0 +1,100 @@
+bfs
+
+Una red de computadoras con enlaces que demoran 10ms para enviar un paquete de una computadora a la otra. Si estamos usando la terminal A, ¿cuánto demora enviar un paquete a la terminal más lejana?
+
+Implementar una clase RedComputadoras con un método
+
+public int maxDemora(String nombreTerminal)
+
+14.46hs
+
+1) Análisis
+* Modelo con un grafo no dirigido.
+* Los enlaces son aristas, con peso 10ms.
+* Vamos a usar un bfs.
+
+14.52hs
+
+2) Planteo
+
+1. busco la terminalA
+2. lanzamos bfs desde terminalA
+  a) me encolo a mi mismo
+  b) encolo null
+  c) contador de niveles en cero. nivel = 0
+  d) itero sobre la cola de vertices
+    i) desencolo un elemento
+    ii) me fijo que desencole, si es null => sumo uno al nivel, si la cola no esta vacia, encolo null
+                               si es vertice => marco como visitado, encolar adyacentes no visitados.       
+3. devolver la cantidad de niveles recorridos por la demora de cada enlace.
+
+15.02hs
+
+3) Solución / código
+
+public class RedComputadoras {
+
+  private Grafo<String> red;
+
+public int maxDemora(String nombreTerminal) {
+  Vertice<String> terminalInicio = buscarTerminal(nombreTerminal);
+
+  int maxDemora = 0;
+
+  if (terminalInicio != null) {
+    ColaGenerica<Vertice<String>> cola = new ColaGenerica<Vertice<String>>();
+    boolean[] visitados = boolean[red.listaVertice().tamanio() + 1];
+
+    cola.encolar(terminalInicio);
+    cola.encolar(null);
+
+    int nivel = -1;
+
+    while (!cola.esVacia()) {
+      Vertice<String> terminalActual = cola.desencolar();
+      
+      if (terminalActual == null) {
+        nivel++;
+       
+        if (!cola.esVacia()) cola.encolar(null);
+      }
+      else {
+        visitados[terminalActual.getPosicion()] = true;
+
+        ListaGenerica<Arista<String>> adyacentes = red.listaDeAdyacentes(terminalActual);
+
+        adyacentes.comenzar();
+
+        while (!adyacentes.fin()) {
+          Arista<String> adyacente = adyacentes.proximo();
+
+          Vertice<String> siguienteTerminal = adyacente.verticeDestino();
+
+          if (!visitados[siguienteTerminal.getPosicion()]) cola.encolar(siguienteTerminal);
+        }
+      }
+    }
+
+    maxDemora = nivel * 10;
+  }
+
+  return maxDemora;
+}
+
+public Vertice<String> buscarTerminal(String nombreTerminal) {
+  ListaGenerica<Vertice<String>> vertices = red.listaVertices();
+
+  vertices.comenzar();
+
+  while (!vertices.fin()) {
+    Vertice<String> vertice = vertices.proximo();
+
+    if (vertice.dato().equals(nombreTerminal)) return vertice;
+  }
+
+  return null;
+}
+
+}
+
+15.30hs

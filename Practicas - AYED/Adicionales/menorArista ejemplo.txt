@@ -1,0 +1,52 @@
+Después podemos ver como se haria el ejercicio de caperusita pero para 
+que retorne un camino mínimo sumando el peso de las aristas y usando datos primitivos?
+
+
+cantidad de ciudades obligatorias seria el tamaño de los caminos? 
+
+
+
+public ListaGenerica<String> recorridoMasSeguro(){ 
+                declaro sumaMin
+		ListaGenerica<String> caminoActual = new ListaEnlazadaGenerica<String>(); //lista para el camino actual
+		ListaGenerica<String> resultado = new ListaEnlazadaGenerica<String>(); //lista para el camino minimo a devolver  
+		boolean [] marca = new boolean [bosque.listaDeVertices().tamanio()+1]; 
+		Vertice<String> v = buscarCasaCaperusita(); //busqueda de la casa de caperusita 
+		caminoActual.agregarFinal(v.dato());
+		marca [v.getPosicion()] = true;
+		dfs(v, caminoActual, marca, resultado, sumaMin);
+		return resultado;	
+	}
+
+
+
+private int dfs(Vertice <String> v, ListaGenerica<String> camAct, boolean[] marca, ListaGenerica<String> resultado, sumaMin) {
+                        
+                        Arista<String> a = ady.proximo(); 
+			Vertice<String> vDest = a.verticeDestino(); // tomo el v ady
+			int posDest = vDest.getPosicion();
+			if(!marca[posDest] && a.peso() < 5) { //si el ady no esta marcado y el peso de la arista es menor que 5 
+				
+                                marca[posDest] = true;  //lo marco
+				camAct.agregarFinal(vDest.dato()); //lo agrego al camino actual 
+
+                                sumMin = SumMin + a.peso //suma el peso de la arista
+
+				if((vDest.dato().equals("Casa Abuelita")) && (resultado.esVacia() || (la suma min < minimoX){
+                                        actualizar min 
+                                        resultado.eliminarTodos();
+					camAct.comenzar();
+					while(!camAct.fin()) {
+						resultado.agregarFinal(camAct.proximo()); //copio el camino actual en otra ref de memoria y a esa ref de mem la cargo en resultado 
+					}
+				}
+				else {
+					 minimox = dfs(vDest, camAct, marca, resultado); guardo el min 
+				 }
+				 marca[posDest] = false;
+				 camAct.eliminarEn(camAct.tamanio());
+                                 //fijarse que sumMin este restaurado 
+			}
+		}
+          retornar el minimoX 
+	}
